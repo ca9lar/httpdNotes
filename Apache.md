@@ -63,7 +63,7 @@ writable by the superuser or the webmaster user/group, not the Apache user/group
 ```
 
 ==================================================================================================== 
-Methods of MPM (Multi-Processing Modules) operation of the Apache webserver
+#### Methods of MPM (Multi-Processing Modules) operation of the Apache webserver
 ==================================================================================================== 
 'prefork MPM'
 A number of child processes is spawned in advance, with each child serving one connection.
@@ -142,21 +142,21 @@ Listen 10.17.1.5:8080
 User nobody
 Group nobody
 ==================================================================================================== 
-Main configuration directives
+#### Main configuration directives
 ==================================================================================================== 
-# Directory in filesystem that maps to the root of the website
+##### Directory in filesystem that maps to the root of the website
 DocumentRoot /var/www/html
 
-# Map the URL http://www.mysite.org/image/ to the directory /mydir/pub/image in the filesystem. This allows Apache to serve content placed outside of the document root
+##### Map the URL http://www.mysite.org/image/ to the directory /mydir/pub/image in the filesystem. This allows Apache to serve content placed outside of the document root
 Alias /image /mydir/pub/image
 
-# Media types file. The path is relative to ServerRoot
+##### Media types file. The path is relative to ServerRoot
 TypesConfig conf/mime.types
 
-# Map the specified filename extensions onto the specified content type. These entries adds to or override the entries from the media types file conf/mime.types
+##### Map the specified filename extensions onto the specified content type. These entries adds to or override the entries from the media types file conf/mime.types
 AddType image/jpeg jpeg jpg jpe
 
-# Redirect to a URL on the same host. 
+##### Redirect to a URL on the same host. 
 	Status can be:
 			permanent	return a HTTP status 301 - Moved Permanently
 			temp		return a HTTP status 302 - Found (i.e. the resource was temporarily moved)
@@ -166,10 +166,10 @@ AddType image/jpeg jpeg jpg jpe
 
 Redirect permanent /foo /bar
 
-# Redirect to a URL on a different host
+##### Redirect to a URL on a different host
 Redirect /foo http://www.example.com/foo
 
-# Name of the distributed configuration file, which contains directives that apply to the document directory it is in and to all its subtrees
+##### Name of the distributed configuration file, which contains directives that apply to the document directory it is in and to all its subtrees
 AccessFileName .htaccess
 
 	Specify which global directives a .htaccess file can override:
@@ -183,152 +183,185 @@ AccessFileName .htaccess
 ==================================================================================================== 
 
 ==================================================================================================== 
-Virtual hosts directives
+#### Virtual hosts directives
 ==================================================================================================== 
-# Specify which IP address will serve virtual hosting. The argument can be an IP address, an address:port pair, or * for all IP addresses of the server. The argument will be repeated in the relevant <VirtualHost> directive
+##### Specify which IP address will serve virtual hosting. The argument can be an IP address, an address:port pair, or * for all IP addresses of the server. The argument will be repeated in the relevant <VirtualHost> directive
 NameVirtualHost *
 
-# The first listed virtual host is also the default virtual host. It inherits those main settings that does not override. This virtual host answers to http://www.mysite.org , and also redirects there all HTTP requests on the domain mysite.org
+##### The first listed virtual host is also the default virtual host. It inherits those main settings that does not override. This virtual host answers to http://www.mysite.org , and also redirects there all HTTP requests on the domain mysite.org
+```sh
 <VirtualHost *:80>
 	ServerName www.mysite.org
 	ServerAlias mysite.org *.mysite.org
 	DocumentRoot /var/www/vhosts/mysite
 </VirtualHost>
-
+````
 # Name-based virtual host http://www.mysite2.org . Multiple name-based virtual hosts can share the same IP address; DNS must be configured accordingly to map each name to the correct IP address. Cannot be used with HTTPS
+```sh
 <VirtualHost *:80>
 	ServerAdmin webmaster@www.mysite2.org
 	ServerName www.mysite2.org
 	DocumentRoot /var/www/vhosts/mysite2
 	ErrorLog /var/www/logs/mysite2
 </VirtualHost>
-
+```
+	
 # Port-based virtual host answering to connections on port 8080. In this case the config file must contain a Listen 8080 directive
+```sh
 <VirtualHost *:8080>
 	ServerName www.mysite3.org
 	DocumentRoot /var/www/vhosts/mysite3
 </VirtualHost>
-
+```
 # IP-based virtual host answering to http://10.17.1.5
+```sh
 <VirtualHost 10.17.1.5:80>
 	ServerName www.mysite4.org
 	DocumentRoot /var/www/vhosts/mysite4
 </VirtualHost>
+```
 ==================================================================================================== 
-Logging directives
+#### Logging directives
 ==================================================================================================== 
-# Specify the format of a log
+##### Specify the format of a log
+```sh
 LogFormat "%h %l %u %t \"%r\" %>s %b"
-
-# Specify a nickname (here, "common") for a log format. 
-	# This one is the CLF (Common Log Format) defined as such: 
-		%h	IP address of the client host
-		%l	Identity of client as determined by identd
-		%u	User ID of client making the request
-		%t	Timestamp the server completed the request
-		%r	Request as done by the user
-		%s	Status code sent by the server to the client
-		%b	Size of the object returned, in bytes
+```
+##### Specify a nickname (here, "common") for a log format. 
+```sh
+# This one is the CLF (Common Log Format) defined as such: 
+	%h	IP address of the client host
+	%l	Identity of client as determined by identd
+	%u	User ID of client making the request
+	%t	Timestamp the server completed the request
+	%r	Request as done by the user
+	%s	Status code sent by the server to the client
+	%b	Size of the object returned, in bytes
+```
 # Set up a log filename, with the format or (as in this case) the nickname specified
+```sh
 CustomLog /var/log/httpd/access_log common
-
+```
 # Set up a log filename, with format determined by the most recent LogFormat directive which did not define a nickname
+```sh
 TransferLog /var/log/httpd/access_log
-
+```
 # Organize log rotation every 24 hours
+```sh
 TransferLog "|rotatelogs access_log 86400"
-
+```
 # Disable DNS hostname lookup to save network traffic. Hostnames can be resolved later by processing the log file: 'logresolve <access_log >accessdns_log'
+```sh
 HostnameLookups Off
+```
 ==================================================================================================== 
-Limited scope directives
+#### Limited scope directives
 ==================================================================================================== 
-# Limit the scope of the specified directives to the directory /var/www/html/foobar and its subdirectories
+##### Limit the scope of the specified directives to the directory /var/www/html/foobar and its subdirectories
+```sh
 <Directory "/var/www/html/foobar">
 	[list of directives]
 </Directory>
-
-# Limit the scope of the specified directive to the URL http://www.mysite.org/foobar/ and its subdirectories
+```
+##### Limit the scope of the specified directive to the URL http://www.mysite.org/foobar/ and its subdirectories
+```sh
 <Location /foobar>
 	[list of directives]
 </Location>
+```
 ==================================================================================================== 
-Directory protection directives
+#### Directory protection directives
 ==================================================================================================== 
-# Name of the realm. The client will be shown the realm name and prompted to enter an user and password
+##### Name of the realm. The client will be shown the realm name and prompted to enter an user and password
+```sh
 <Directory "/var/www/html/protected">
 	AuthName "Protected zone"
-
-# Type of user authentication: Basic, Digest, Form, or None
-	AuthType Basic
-
-# User database file. Each line is in the format user:encrypted_password 
-# To add an user jdoe to the database file, use the command: htpasswd -c /var/www/.htpasswd jdoe (will prompt for his password)
-	AuthUserFile "/var/www/.htpasswd"
-
-# Group database file. Each line contains a groupname followed by all member usernames: mygroup: jdoe ksmith mgreen
-	AuthGroupFile "/var/www/.htgroup"
-
-# Control who can access the protected resource. 
-		valid-user 	any user in the user database file
-		user jdoe	only the specified user
-		roup mygroup	only the members of the specified group
+```
+##### Type of user authentication: Basic, Digest, Form, or None
+	```sh
+AuthType Basic
+``` 
+##### User database file. Each line is in the format user:encrypted_password 
+##### To add an user jdoe to the database file, use the command: htpasswd -c /var/www/.htpasswd jdoe (will prompt for his password)
+```sh
+AuthUserFile "/var/www/.htpasswd"
+```
+##### Group database file. Each line contains a groupname followed by all member usernames: mygroup: jdoe ksmith mgreen
+```sh
+AuthGroupFile "/var/www/.htgroup"
+```
+##### Control who can access the protected resource. 
+```sh
+valid-user 	any user in the user database file
+user jdoe	only the specified user
+roup mygroup	only the members of the specified group
 
 	equire valid-user
-
-# Control which host can access the protected resource
+```
+##### Control which host can access the protected resource
+```sh
 	Allow from 10.13.13.0/24
+```
+##### Set the access policy concerning user and host control.
+```sh
+All	both Require and Allow criteria must be satisfied
+Any	any of Require or Allow criteria must be satisfied
 
-# Set the access policy concerning user and host control.
-		All	both Require and Allow criteria must be satisfied
-		Any	any of Require or Allow criteria must be satisfied
+Satisfy Any
 
-	Satisfy Any
-
-# Control the evaluation order of Allow and Deny directives.
-		Allow,Deny 	First, all Allow directives are evaluated; at least one must match, or the request is rejected. Next, all Deny directives are evaluated; if any matches, the request is rejected. Last, any requests which do not match an Allow or a Deny directive are denied
+##### Control the evaluation order of Allow and Deny directives.
+```sh
+Allow,Deny 	First, all Allow directives are evaluated; at least one must match, or the request is rejected. Next, all Deny directives are evaluated; if any matches, the request is rejected. Last, any requests which do not match an Allow or a Deny directive are denied
 
 		Deny,Allow	First, all Deny directives are evaluated; if any match, the request is denied unless it also matches an Allow directive. Any requests which do not match any Allow or Deny directives are permitted
-
+```
 </Directory>
 ==================================================================================================== 
-SSL/TLS directives (module mod_ssl)
+#### SSL/TLS directives (module mod_ssl)
 ==================================================================================================== 
-# SSL server certificate
+##### SSL server certificate
+```sh
 SSLCertificateFile \
 /etc/httpd/conf/ssl.crt/server.crt
-
-# SSL server private key (for security reasons, this file must be mode 600 and owned by root)
+```
+##### SSL server private key (for security reasons, this file must be mode 600 and owned by root)
+```sh
 SSLCertificateKeyFile \
 /etc/httpd/conf/ssl.key/server.key
-
-# Directory containing the certificates of CAs. Files in this directory are PEM-encoded and accessed via symlinks to hash filenames
+```
+##### Directory containing the certificates of CAs. Files in this directory are PEM-encoded and accessed via symlinks to hash filenames
+```sh
 SSLCACertificatePath \
 /usr/local/apache2/conf/ssl.crt/
-
-# Certificates of CAs. Certificates are PEM-encoded and concatenated in a single bundle file in order of preference
+```
+##### Certificates of CAs. Certificates are PEM-encoded and concatenated in a single bundle file in order of preference
+```sh
 SSLCACertificateFile \
 /usr/local/apache2/conf/ssl.crt/ca-bundle.crt
-
-# Certificate chain of the CAs. Certificates are PEM-encoded and concatenated from the issuing CA certificate of the server certificate to the root CA certificate. Optional
+```
+##### Certificate chain of the CAs. Certificates are PEM-encoded and concatenated from the issuing CA certificate of the server certificate to the root CA certificate. Optional
+```sh
 SSLCertificateChainFile \
 /usr/local/apache2/conf/ssl.crt/ca.crt
-
-# Enable the SSL/TLS Protocol Engine
+```
+##### Enable the SSL/TLS Protocol Engine
+```sh
 SSLEngine on
-
-# SSL protocol flavors that the client can use to connect to server. 
-	Possible values are:
-		SSLv2 (deprecated)
-		SSLv3
-		TLSv1
-		TLSv1.1
-		TLSv1.2
-		All	(all the above protocols)
+```
+##### SSL protocol flavors that the client can use to connect to server. 
+```sh
+Possible values are:
+	SSLv2 (deprecated)
+	SSLv3
+	TLSv1
+	TLSv1.1
+	TLSv1.2
+	All	(all the above protocols)
 
 SSLProtocol +SSLv3 +TLSv1.2
-
-# Cipher suite available for the SSL handshake (key exchange algorithms, authentication algorithms, cipher/encryption algorithms, MAC digest algorithms) 
+```
+##### Cipher suite available for the SSL handshake (key exchange algorithms, authentication algorithms, cipher/encryption algorithms, MAC digest algorithms) 
+```sh
 SSLCipherSuite \
 ALL:!aDH:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP
 
@@ -342,24 +375,26 @@ ALL:!aDH:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP
 		Full 	(or not specified)	sends Server: Apache/2.4.2 (Unix) PHP/4.2.2 MyMod/1.2
 
 ServerTokens Full
-
-# Trailing footer line on server-generated documents.
-	Possible values are:
+```
+##### Trailing footer line on server-generated documents.
+```sh
+Possible values are:
 		Off				no footer line (default)
 		On				server version number and ServerName
 		EMail 				as above, plus a mailto link to ServerAdmin
 
 ServerSignature Off
-
-# Certificate verification level for client authentication.
-	Possible values are:
-		none				no client certificate is required 
-		require 			the client needs to present a validcertificate
-		optional 			the client may present a valid certificate (this option is unusedas it doesn't work on all browsers)
-		optional_no_ca 			the client may present a valid certificate but it doesnt need to be successfully verifiable (this option has not much purpose and is used only for SSL testing)
+```
+##### Certificate verification level for client authentication.
+```sh
+Possible values are:
+	none				no client certificate is required 
+	require 			the client needs to present a validcertificate
+	optional 			the client may present a valid certificate (this option is unusedas it doesn't work on all browsers)
+	optional_no_ca 			the client may present a valid certificate but it doesnt need to be successfully verifiable (this option has not much purpose and is used only for SSL testing)
 
 SSLVerifyClient none
-
+```
 # Enable TRACE requests
 TraceEnable on
 ==================================================================================================== 
